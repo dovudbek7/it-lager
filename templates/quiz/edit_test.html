@@ -1,0 +1,72 @@
+{% extends 'quiz/base.html' %}
+{% block title %}{{ test.title }} — Tahrirlash{% endblock %}
+{% block content %}
+<div class="container-wide" style="padding-top:2rem; padding-bottom:3rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
+    <div>
+      <h1 style="font-size:22px;font-weight:600;">{{ test.title }}</h1>
+      <p style="color:#5F5E5A;font-size:14px;margin-top:2px;">{{ questions|length }} savol • {{ test.duration_minutes }} daqiqa</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="{% url 'quiz:test_results' test.id %}" class="btn btn-sm">Natijalar</a>
+      <a href="{% url 'quiz:dashboard' %}" class="btn btn-sm">← Panel</a>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;">
+
+    <div>
+      <h2 style="font-size:16px;font-weight:600;margin-bottom:1rem;">Savol qo'shish</h2>
+      <div class="card">
+        <form method="post" action="{% url 'quiz:add_question' test.id %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>Savol matni</label>
+            <textarea name="question_text" placeholder="Savolni yozing..." required></textarea>
+          </div>
+          {% for i in "1234" %}
+          <div class="form-group">
+            <label>Variant {{ i }}</label>
+            <input type="text" name="choice_{{ i }}" placeholder="Javob varianti {{ i }}" required>
+          </div>
+          {% endfor %}
+          <div class="form-group">
+            <label>To'g'ri javob</label>
+            <select name="correct">
+              <option value="1">Variant 1</option>
+              <option value="2">Variant 2</option>
+              <option value="3">Variant 3</option>
+              <option value="4">Variant 4</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Savolni qo'shish +</button>
+        </form>
+      </div>
+    </div>
+
+    <div>
+      <h2 style="font-size:16px;font-weight:600;margin-bottom:1rem;">Kiritilgan savollar ({{ questions|length }})</h2>
+      {% if questions %}
+        {% for q in questions %}
+        <div class="card" style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <p style="font-size:14px;font-weight:500;">{{ forloop.counter }}. {{ q.text }}</p>
+            <a href="{% url 'quiz:delete_question' q.id %}" class="btn btn-sm btn-danger" onclick="return confirm('O\'chirilsinmi?')" style="flex-shrink:0;">O'chirish</a>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px;">
+            {% for c in q.choices.all %}
+            <div style="font-size:13px;color:{% if c.is_correct %}#3B6D11{% else %}#5F5E5A{% endif %};">
+              {% if c.is_correct %}✓{% else %}○{% endif %} {{ c.text }}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty" style="border:0.5px dashed #D3D1C7;border-radius:10px;background:#fff;">Hali savol qo'shilmagan</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

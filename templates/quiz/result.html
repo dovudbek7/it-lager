@@ -1,0 +1,54 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Natija — {{ attempt.test.title }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:2rem; padding-bottom:3rem; max-width:560px;">
+  <div class="card result-header">
+    <div class="score-circle">{{ attempt.percentage }}%</div>
+    <h1 style="font-size:20px;">{{ attempt.student.name }}</h1>
+    <p style="color:#5F5E5A;font-size:14px;margin-top:4px;">{{ attempt.test.title }}</p>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val good">{{ attempt.score }}</div><div class="stat-lbl">To'g'ri</div></div>
+      <div class="stat-box">
+        {% with wrong=attempt.total|add:"-0" %}
+        <div class="stat-val bad">{{ attempt.total }}</div>
+        {% endwith %}
+        <div class="stat-lbl">Jami savol</div>
+      </div>
+      <div class="stat-box"><div class="stat-val">{{ attempt.time_spent_seconds }}s</div><div class="stat-lbl">Vaqt</div></div>
+    </div>
+    <a href="{% url 'quiz:home' %}" class="btn btn-primary" style="width:100%;justify-content:center;">Bosh sahifaga →</a>
+  </div>
+
+  <div class="card" style="margin-top:1rem;text-align:center;padding:1.25rem 1rem;">
+    {% if attempt.score > 8 %}
+      <p style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz. Ajoyib natija!</p>
+      <p style="font-size:18px;font-weight:700;color:#3B6D11;">Kurs narxi: <span>4 300 000 so'm</span></p>
+    {% elif attempt.score > 6 %}
+      <p style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz. Yaxshi natija!</p>
+      <p style="font-size:18px;font-weight:700;color:#B07A10;">Kurs narxi: <span>4 370 000 so'm</span></p>
+    {% else %}
+      <p style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz.</p>
+      <p style="font-size:18px;font-weight:700;color:#993C1D;">Kurs narxi: <span>4 500 000 so'm</span></p>
+    {% endif %}
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:1rem;">Javoblar sharhi</h2>
+    {% for ans in answers %}
+    <div class="answer-item {% if ans.is_correct %}correct{% else %}wrong{% endif %}">
+      <div class="q-label">{{ forloop.counter }}. {{ ans.question.text|truncatechars:80 }}</div>
+      {% if ans.chosen %}
+        <div class="chosen">Siz: {{ ans.chosen.text }}</div>
+      {% else %}
+        <div class="chosen" style="color:#993C1D;">Javob berilmagan</div>
+      {% endif %}
+      {% if not ans.is_correct %}
+        {% for c in ans.question.choices.all %}
+          {% if c.is_correct %}<div class="correct-ans">✓ To'g'ri: {{ c.text }}</div>{% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

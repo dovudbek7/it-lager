@@ -1,0 +1,52 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Natijalar — {{ test.title }}{% endblock %}
+{% block content %}
+<div class="container-wide" style="padding-top:2rem; padding-bottom:3rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
+    <div>
+      <h1 style="font-size:22px;font-weight:600;">{{ test.title }} — Natijalar</h1>
+      <p style="color:#5F5E5A;font-size:14px;margin-top:2px;">{{ attempts|length }} urinish • O'rtacha ball: {{ avg }}/{{ test.question_count }}</p>
+    </div>
+    <a href="{% url 'quiz:edit_test' test.id %}" class="btn btn-sm">← Testga qaytish</a>
+  </div>
+
+  {% if attempts %}
+  <div class="card" style="padding:0;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>O'quvchi</th>
+            <th>Telefon</th>
+            <th>Ball</th>
+            <th>Foiz</th>
+            <th>Vaqt sarfi</th>
+            <th>Sana</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in attempts %}
+          <tr>
+            <td style="color:#5F5E5A;">{{ forloop.counter }}</td>
+            <td style="font-weight:500;">{{ a.student.name }}</td>
+            <td style="color:#5F5E5A;">{{ a.student.phone }}</td>
+            <td>{{ a.score }}/{{ a.total }}</td>
+            <td>
+              <span class="badge {% if a.percentage >= 70 %}badge-green{% elif a.percentage >= 50 %}badge-purple{% else %}badge-red{% endif %}">
+                {{ a.percentage }}%
+              </span>
+            </td>
+            <td style="color:#5F5E5A;">{{ a.time_spent_seconds }}s</td>
+            <td style="color:#5F5E5A;font-size:13px;">{{ a.finished_at|date:"d.m.Y H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty">Hali hech kim bu testni ishlamagan.</div>
+  {% endif %}
+</div>
+{% endblock %}

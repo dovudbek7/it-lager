@@ -1,0 +1,29 @@
+{% extends 'quiz/base.html' %}
+{% block title %}{{ test.title }} — Kirish{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:2rem; padding-bottom:3rem; max-width:460px;">
+  <div class="page-header">
+    <h1>{{ test.title }}</h1>
+    <p>Davom etishdan oldin ma'lumotlaringizni kiriting</p>
+  </div>
+  {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
+  <div class="card">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>To'liq ismingiz</label>
+        <input type="text" name="name" placeholder="Masalan: Alibek Karimov" required>
+      </div>
+      <div class="form-group">
+        <label>Telefon raqamingiz</label>
+        <input type="tel" name="phone" placeholder="+998 90 123 45 67" required>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+        <span class="badge badge-purple">{{ test.question_count }} savol</span>
+        <span class="badge badge-gray">{{ test.duration_minutes }} daqiqa vaqt</span>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:1.25rem;justify-content:center;">Testni boshlash →</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

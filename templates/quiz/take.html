@@ -1,0 +1,154 @@
+{% extends 'quiz/base.html' %}
+{% block title %}{{ attempt.test.title }}{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:1.5rem; padding-bottom:3rem;">
+  <div class="q-nav">
+    <span id="q-counter">1 / {{ questions|length }}</span>
+    <div class="ring-wrap">
+      <svg width="68" height="68" viewBox="0 0 68 68">
+        <circle class="ring-bg" cx="34" cy="34" r="28"/>
+        <circle class="ring-arc" id="ring-arc" cx="34" cy="34" r="28"/>
+      </svg>
+      <span class="ring-text" id="timer-text">60</span>
+    </div>
+  </div>
+
+  <style>
+    .ring-wrap { position:relative; width:68px; height:68px; flex-shrink:0; }
+    .ring-wrap svg { display:block; }
+    .ring-bg { fill:none; stroke:#E5E5E5; stroke-width:6; }
+    .ring-arc {
+      fill:none;
+      stroke:#3B6D11;
+      stroke-width:6;
+      stroke-linecap:round;
+      transform:rotate(-90deg);
+      transform-origin:34px 34px;
+      stroke-dasharray:175.929;
+      stroke-dashoffset:0;
+      transition:stroke-dashoffset 1s linear, stroke 0.4s ease;
+    }
+    .ring-arc.warn { stroke:#e63946; }
+    .ring-text {
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      font-size:17px; font-weight:700; color:#1a1a1a;
+      line-height:1;
+    }
+    .ring-arc.warn ~ .ring-text, .ring-wrap.warn .ring-text { color:#e63946; }
+  </style>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <div id="questions-wrap">
+    {% for q in questions %}
+    <div class="question-block {% if forloop.first %}active{% endif %}" data-qid="{{ q.id }}">
+      <div class="card">
+        <p class="question-text">{{ forloop.counter }}. {{ q.text }}</p>
+        <div class="choices">
+          {% for c in q.choices.all %}
+          <label class="choice-label" data-cid="{{ c.id }}" onclick="select(this, {{ q.id }}, {{ c.id }})">
+            <div class="choice-letter">{{ forloop.counter|stringformat:"s"|slice:":1" }}{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}</div>
+            <span class="choice-text">{{ c.text }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <div class="q-actions">
+          {% if not forloop.first %}
+          <button class="btn btn-sm" onclick="prevQ()">← Oldingi</button>
+          {% else %}<span></span>{% endif %}
+          {% if forloop.last %}
+          <button class="btn btn-primary btn-sm" onclick="finishTest()">Tugatish ✓</button>
+          {% else %}
+          <button class="btn btn-primary btn-sm" onclick="nextQ()">Keyingisi →</button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+const TOTAL = {{ questions|length }};
+const Q_DURATION = 60;
+const ATTEMPT_ID = {{ attempt.id }};
+let current = 0;
+let elapsed = 0;
+let answers = {};
+let finished = false;
+let qElapsed = 0;
+let qInterval = null;
+
+const CIRCUMFERENCE = 2 * Math.PI * 28; // 175.93
+
+const blocks = document.querySelectorAll('.question-block');
+const ringArc = document.getElementById('ring-arc');
+const timerText = document.getElementById('timer-text');
+const ringWrap = document.querySelector('.ring-wrap');
+
+function updateUI() {
+  blocks.forEach((b, i) => b.classList.toggle('active', i === current));
+  document.getElementById('q-counter').textContent = `${current + 1} / ${TOTAL}`;
+  document.getElementById('progress').style.width = `${((current + 1) / TOTAL) * 100}%`;
+}
+
+function select(el, qid, cid) {
+  el.closest('.choices').querySelectorAll('.choice-label').forEach(l => l.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[qid] = cid;
+}
+
+function setRing(remaining) {
+  const offset = CIRCUMFERENCE * (1 - remaining / Q_DURATION);
+  ringArc.style.strokeDashoffset = offset;
+  timerText.textContent = remaining;
+  const warn = remaining <= 15;
+  ringArc.classList.toggle('warn', warn);
+  ringWrap.classList.toggle('warn', warn);
+}
+
+function startQTimer() {
+  if (qInterval) clearInterval(qInterval);
+  qElapsed = 0;
+  setRing(Q_DURATION);
+  qInterval = setInterval(() => {
+    elapsed++;
+    qElapsed++;
+    const remaining = Q_DURATION - qElapsed;
+    if (remaining <= 0) {
+      clearInterval(qInterval);
+      setRing(0);
+      if (current < TOTAL - 1) { current++; updateUI(); startQTimer(); }
+      else { finishTest(); }
+      return;
+    }
+    setRing(remaining);
+  }, 1000);
+}
+
+function nextQ() { if (current < TOTAL - 1) { current++; updateUI(); startQTimer(); } }
+function prevQ() { if (current > 0) { current--; updateUI(); startQTimer(); } }
+
+startQTimer();
+
+async function finishTest() {
+  if (finished) return;
+  finished = true;
+  if (qInterval) clearInterval(qInterval);
+  const res = await fetch(`/attempt/${ATTEMPT_ID}/submit/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+    body: JSON.stringify({ answers, time_spent: elapsed })
+  });
+  const data = await res.json();
+  if (data.redirect) window.location.href = data.redirect;
+}
+
+function getCookie(name) {
+  const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Panel — TestPlatform{% endblock %}
+{% block content %}
+<div class="container-wide" style="padding-top:2rem; padding-bottom:3rem;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
+    <div class="page-header" style="padding:0;"><h1>Testlar paneli</h1></div>
+    <a href="{% url 'quiz:create_test' %}" class="btn btn-primary">+ Yangi test</a>
+  </div>
+  {% if tests %}
+  <div class="card" style="padding:0;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Test nomi</th>
+            <th>Savollar</th>
+            <th>Vaqt</th>
+            <th>Urinishlar</th>
+            <th>Holat</th>
+            <th>Amallar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for test in tests %}
+          <tr>
+            <td style="font-weight:500;">{{ test.title }}</td>
+            <td>{{ test.question_count }}</td>
+            <td>{{ test.duration_minutes }} min</td>
+            <td>{{ test.attempt_count }}</td>
+            <td>
+              {% if test.is_active %}
+                <span class="badge badge-green">Faol</span>
+              {% else %}
+                <span class="badge badge-gray">Nofaol</span>
+              {% endif %}
+            </td>
+            <td>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <a href="{% url 'quiz:edit_test' test.id %}" class="btn btn-sm">Tahrir</a>
+                <a href="{% url 'quiz:test_results' test.id %}" class="btn btn-sm">Natijalar</a>
+                <a href="{% url 'quiz:toggle_test' test.id %}" class="btn btn-sm">{% if test.is_active %}O'chir{% else %}Yoqish{% endif %}</a>
+                <a href="{% url 'quiz:delete_test' test.id %}" class="btn btn-sm btn-danger" onclick="return confirm('O\'chirilsinmi?')">O'chirish</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty">Hali test yaratilmagan. <a href="{% url 'quiz:create_test' %}">Birinchi testni yarating →</a></div>
+  {% endif %}
+</div>
+{% endblock %}

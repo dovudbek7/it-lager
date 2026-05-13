@@ -1,0 +1,27 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Testlar — TestPlatform{% endblock %}
+{% block content %}
+<div class="container" style="padding-top:2rem; padding-bottom:3rem;">
+  <div class="page-header">
+    <h1>Mavjud testlar</h1>
+    <p>Testni tanlang va boshlang</p>
+  </div>
+  {% if tests %}
+  <div class="test-grid">
+    {% for test in tests %}
+    <div class="test-card">
+      <h2>{{ test.title }}</h2>
+      {% if test.description %}<p style="font-size:14px;color:#5F5E5A;">{{ test.description }}</p>{% endif %}
+      <div class="meta">
+        <span class="badge badge-purple">{{ test.question_count }} savol</span>
+        <span class="badge badge-gray">{{ test.duration_minutes }} daqiqa</span>
+      </div>
+      <a href="{% url 'quiz:enter' test.id %}" class="btn btn-primary" style="margin-top:4px;">Testni boshlash →</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">Hozircha faol test yo'q.</div>
+  {% endif %}
+</div>
+{% endblock %}
