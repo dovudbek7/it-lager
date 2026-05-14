@@ -45,23 +45,23 @@
     {% for q in questions %}
     <div class="question-block {% if forloop.first %}active{% endif %}" data-qid="{{ q.id }}">
       <div class="card">
-        <p class="question-text">{{ forloop.counter }}. {{ q.text }}</p>
+        <p class="question-text">{{ forloop.counter }}. <span data-uz="{{ q.text }}" data-cyr="{{ q.text_uz_cyr }}" data-ru="{{ q.text_ru }}">{{ q.text }}</span></p>
         <div class="choices">
           {% for c in q.choices.all %}
           <label class="choice-label" data-cid="{{ c.id }}" onclick="select(this, {{ q.id }}, {{ c.id }})">
-            <div class="choice-letter">{{ forloop.counter|stringformat:"s"|slice:":1" }}{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}</div>
-            <span class="choice-text">{{ c.text }}</span>
+            <div class="choice-letter">{% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% else %}D{% endif %}</div>
+            <span class="choice-text" data-uz="{{ c.text }}" data-cyr="{{ c.text_uz_cyr }}" data-ru="{{ c.text_ru }}">{{ c.text }}</span>
           </label>
           {% endfor %}
         </div>
         <div class="q-actions">
           {% if not forloop.first %}
-          <button class="btn btn-sm" onclick="prevQ()">← Oldingi</button>
+          <button class="btn btn-sm" onclick="prevQ()" data-i18n="take.prev">← Oldingi</button>
           {% else %}<span></span>{% endif %}
           {% if forloop.last %}
-          <button class="btn btn-primary btn-sm" onclick="finishTest()">Tugatish ✓</button>
+          <button class="btn btn-primary btn-sm" onclick="finishTest()" data-i18n="take.finish">Tugatish ✓</button>
           {% else %}
-          <button class="btn btn-primary btn-sm" onclick="nextQ()">Keyingisi →</button>
+          <button class="btn btn-primary btn-sm" onclick="nextQ()" data-i18n="take.next">Keyingisi →</button>
           {% endif %}
         </div>
       </div>

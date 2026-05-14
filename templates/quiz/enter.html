@@ -3,26 +3,26 @@
 {% block content %}
 <div class="container" style="padding-top:2rem; padding-bottom:3rem; max-width:460px;">
   <div class="page-header">
-    <h1>{{ test.title }}</h1>
-    <p>Davom etishdan oldin ma'lumotlaringizni kiriting</p>
+    <h1 data-uz="{{ test.title }}" data-cyr="{{ test.title_uz_cyr }}" data-ru="{{ test.title_ru }}">{{ test.title }}</h1>
+    <p data-i18n="enter.subtitle">Davom etishdan oldin ma'lumotlaringizni kiriting</p>
   </div>
   {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
   <div class="card">
     <form method="post">
       {% csrf_token %}
       <div class="form-group">
-        <label>To'liq ismingiz</label>
-        <input type="text" name="name" placeholder="Masalan: Alibek Karimov" required>
+        <label data-i18n="enter.name_label">To'liq ismingiz</label>
+        <input type="text" name="name" data-i18n-ph="enter.name_ph" placeholder="Masalan: Alibek Karimov" required>
       </div>
       <div class="form-group">
-        <label>Telefon raqamingiz</label>
+        <label data-i18n="enter.phone_label">Telefon raqamingiz</label>
         <input type="tel" name="phone" id="phone" placeholder="+998 00-000-00-00" autocomplete="off" required>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
-        <span class="badge badge-purple">{{ test.question_count }} savol</span>
-        <span class="badge badge-gray">{{ test.duration_minutes }} daqiqa vaqt</span>
+        <span class="badge badge-purple">{{ test.question_count }} <span data-i18n="enter.questions">savol</span></span>
+        <span class="badge badge-gray">{{ test.duration_minutes }} <span data-i18n="enter.minutes">daqiqa vaqt</span></span>
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:1.25rem;justify-content:center;">Testni boshlash →</button>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:1.25rem;justify-content:center;" data-i18n="enter.start">Testni boshlash →</button>
     </form>
   </div>
 </div>

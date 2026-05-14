@@ -3,25 +3,28 @@
 {% block content %}
 <div class="container" style="padding-top:2rem; padding-bottom:3rem;">
   <div class="page-header">
-    <h1>Mavjud testlar</h1>
-    <p>Testni tanlang va boshlang</p>
+    <h1 data-i18n="home.title">Mavjud testlar</h1>
+    <p data-i18n="home.subtitle">Testni tanlang va boshlang</p>
   </div>
   {% if tests %}
   <div class="test-grid">
     {% for test in tests %}
     <div class="test-card">
-      <h2>{{ test.title }}</h2>
-      {% if test.description %}<p style="font-size:14px;color:#5F5E5A;">{{ test.description }}</p>{% endif %}
+      <h2 data-uz="{{ test.title }}" data-cyr="{{ test.title_uz_cyr }}" data-ru="{{ test.title_ru }}">{{ test.title }}</h2>
+      {% if test.description %}
+      <p style="font-size:14px;color:#5F5E5A;"
+         data-uz="{{ test.description }}" data-cyr="{{ test.description_uz_cyr }}" data-ru="{{ test.description_ru }}">{{ test.description }}</p>
+      {% endif %}
       <div class="meta">
-        <span class="badge badge-purple">{{ test.question_count }} savol</span>
-        <span class="badge badge-gray">{{ test.duration_minutes }} daqiqa</span>
+        <span class="badge badge-purple">{{ test.question_count }} <span data-i18n="home.questions">savol</span></span>
+        <span class="badge badge-gray">{{ test.duration_minutes }} <span data-i18n="home.minutes">daqiqa</span></span>
       </div>
-      <a href="{% url 'quiz:enter' test.id %}" class="btn btn-primary" style="margin-top:4px;">Testni boshlash →</a>
+      <a href="{% url 'quiz:enter' test.id %}" class="btn btn-primary" style="margin-top:4px;" data-i18n="home.start">Testni boshlash →</a>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty">Hozircha faol test yo'q.</div>
+  <div class="empty" data-i18n="home.empty">Hozircha faol test yo'q.</div>
   {% endif %}
 </div>
 {% endblock %}

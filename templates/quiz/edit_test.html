@@ -7,8 +7,14 @@
       <h1 style="font-size:22px;font-weight:600;">{{ test.title }}</h1>
       <p style="color:#5F5E5A;font-size:14px;margin-top:2px;">{{ questions|length }} savol • {{ test.duration_minutes }} daqiqa</p>
     </div>
-    <div style="display:flex;gap:8px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <a href="{% url 'quiz:test_results' test.id %}" class="btn btn-sm">Natijalar</a>
+      <a href="{% url 'quiz:retranslate_test' test.id %}"
+         class="btn btn-sm"
+         style="background:#f0f7ea;color:#3B6D11;border:1px solid #c8e0b0;"
+         onclick="return confirm('Bu test barcha savollari qayta tarjima qilinadi. Davom etilsinmi?')">
+        🌐 Tarjimani yangilash
+      </a>
       <a href="{% url 'quiz:dashboard' %}" class="btn btn-sm">← Panel</a>
     </div>
   </div>

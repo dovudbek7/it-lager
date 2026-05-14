@@ -3,7 +3,11 @@ from django.db import models
 
 class Test(models.Model):
     title = models.CharField(max_length=200)
+    title_uz_cyr = models.CharField(max_length=200, blank=True)
+    title_ru = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
+    description_uz_cyr = models.TextField(blank=True)
+    description_ru = models.TextField(blank=True)
     duration_minutes = models.PositiveIntegerField(default=30)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,6 +22,8 @@ class Test(models.Model):
 class Question(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
+    text_uz_cyr = models.TextField(blank=True)
+    text_ru = models.TextField(blank=True)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -30,6 +36,8 @@ class Question(models.Model):
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices')
     text = models.CharField(max_length=300)
+    text_uz_cyr = models.CharField(max_length=300, blank=True)
+    text_ru = models.CharField(max_length=300, blank=True)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):

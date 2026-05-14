@@ -4,7 +4,15 @@
 <div class="container-wide" style="padding-top:2rem; padding-bottom:3rem;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
     <div class="page-header" style="padding:0;"><h1>Testlar paneli</h1></div>
-    <a href="{% url 'quiz:create_test' %}" class="btn btn-primary">+ Yangi test</a>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="{% url 'quiz:retranslate_all' %}"
+         class="btn btn-sm"
+         style="background:#f0f7ea;color:#3B6D11;border:1px solid #c8e0b0;"
+         onclick="return confirm('Barcha testlar qayta tarjima qilinadi (bir oz vaqt ketadi). Davom etilsinmi?')">
+        🌐 Barchasini tarjima qilish
+      </a>
+      <a href="{% url 'quiz:create_test' %}" class="btn btn-primary">+ Yangi test</a>
+    </div>
   </div>
   {% if tests %}
   <div class="card" style="padding:0;">

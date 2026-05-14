@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Avg, Count
 from .models import Test, Question, Choice, Student, Attempt, Answer
+from .translation import uz_latin_to_cyrillic
 
 
 # ─── O'QUVCHI VIEWS ───────────────────────────────────────────
@@ -119,7 +120,11 @@ def create_test(request):
         title = request.POST.get('title', '').strip()
         desc = request.POST.get('description', '').strip()
         duration = int(request.POST.get('duration', 30))
-        test = Test.objects.create(title=title, description=desc, duration_minutes=duration)
+        test = Test.objects.create(
+            title=title, title_uz_cyr=uz_latin_to_cyrillic(title),
+            description=desc, description_uz_cyr=uz_latin_to_cyrillic(desc),
+            duration_minutes=duration,
+        )
         return redirect('quiz:edit_test', test_id=test.id)
     return render(request, 'quiz/create_test.html')
 
@@ -138,12 +143,14 @@ def add_question(request, test_id):
         qtext = request.POST.get('question_text', '').strip()
         if qtext:
             order = test.questions.count() + 1
-            q = Question.objects.create(test=test, text=qtext, order=order)
+            q = Question.objects.create(
+                test=test, text=qtext, text_uz_cyr=uz_latin_to_cyrillic(qtext), order=order
+            )
             for i in range(1, 5):
                 ctext = request.POST.get(f'choice_{i}', '').strip()
                 is_correct = request.POST.get('correct') == str(i)
                 if ctext:
-                    Choice.objects.create(question=q, text=ctext, is_correct=is_correct)
+                    Choice.objects.create(question=q, text=ctext, text_uz_cyr=uz_latin_to_cyrillic(ctext), is_correct=is_correct)
     return redirect('quiz:edit_test', test_id=test.id)
 
 
@@ -167,6 +174,36 @@ def toggle_test(request, test_id):
 def delete_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     test.delete()
+    return redirect('quiz:dashboard')
+
+
+@login_required(login_url='/teacher/login/')
+def retranslate_test(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    test.title_uz_cyr = uz_latin_to_cyrillic(test.title)
+    test.description_uz_cyr = uz_latin_to_cyrillic(test.description)
+    test.save()
+    for q in test.questions.prefetch_related('choices'):
+        q.text_uz_cyr = uz_latin_to_cyrillic(q.text)
+        q.save()
+        for c in q.choices.all():
+            c.text_uz_cyr = uz_latin_to_cyrillic(c.text)
+            c.save()
+    return redirect('quiz:edit_test', test_id=test.id)
+
+
+@login_required(login_url='/teacher/login/')
+def retranslate_all(request):
+    for test in Test.objects.prefetch_related('questions__choices'):
+        test.title_uz_cyr = uz_latin_to_cyrillic(test.title)
+        test.description_uz_cyr = uz_latin_to_cyrillic(test.description)
+        test.save()
+        for q in test.questions.all():
+            q.text_uz_cyr = uz_latin_to_cyrillic(q.text)
+            q.save()
+            for c in q.choices.all():
+                c.text_uz_cyr = uz_latin_to_cyrillic(c.text)
+                c.save()
     return redirect('quiz:dashboard')
 
 

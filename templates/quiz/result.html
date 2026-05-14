@@ -5,46 +5,86 @@
   <div class="card result-header">
     <div class="score-circle">{{ attempt.percentage }}%</div>
     <h1 style="font-size:20px;">{{ attempt.student.name }}</h1>
-    <p style="color:#5F5E5A;font-size:14px;margin-top:4px;">{{ attempt.test.title }}</p>
+    <p style="color:#5F5E5A;font-size:14px;margin-top:4px;"
+       data-uz="{{ attempt.test.title }}"
+       data-cyr="{{ attempt.test.title_uz_cyr }}"
+       data-ru="{{ attempt.test.title_ru }}">{{ attempt.test.title }}</p>
     <div class="stats-grid">
-      <div class="stat-box"><div class="stat-val good">{{ attempt.score }}</div><div class="stat-lbl">To'g'ri</div></div>
       <div class="stat-box">
-        {% with wrong=attempt.total|add:"-0" %}
-        <div class="stat-val bad">{{ attempt.total }}</div>
-        {% endwith %}
-        <div class="stat-lbl">Jami savol</div>
+        <div class="stat-val good">{{ attempt.score }}</div>
+        <div class="stat-lbl" data-i18n="result.correct_lbl">To'g'ri</div>
       </div>
-      <div class="stat-box"><div class="stat-val">{{ attempt.time_spent_seconds }}s</div><div class="stat-lbl">Vaqt</div></div>
+      <div class="stat-box">
+        <div class="stat-val bad">{{ attempt.total }}</div>
+        <div class="stat-lbl" data-i18n="result.total_lbl">Jami savol</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val">{{ attempt.time_spent_seconds }}s</div>
+        <div class="stat-lbl" data-i18n="result.time_lbl">Vaqt</div>
+      </div>
     </div>
-    <a href="{% url 'quiz:home' %}" class="btn btn-primary" style="width:100%;justify-content:center;">Bosh sahifaga →</a>
+    <a href="{% url 'quiz:home' %}" class="btn btn-primary" style="width:100%;justify-content:center;" data-i18n="result.home">Bosh sahifaga →</a>
   </div>
 
   <div class="card" style="margin-top:1rem;text-align:center;padding:1.25rem 1rem;">
     {% if attempt.score > 8 %}
-      <p style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz. Ajoyib natija!</p>
-      <p style="font-size:18px;font-weight:700;color:#3B6D11;">Kurs narxi: <span>4 300 000 so'm</span></p>
+      <p class="lang-uz" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz. Ajoyib natija!</p>
+      <p class="lang-cyr" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;display:none;">Сиз <strong>{{ attempt.score }} та</strong> саволга тўғри жавоб бердингиз. Ажойиб натижа!</p>
+      <p class="lang-ru" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;display:none;">Вы правильно ответили на <strong>{{ attempt.score }}</strong> вопросов. Отличный результат!</p>
+      <p style="font-size:18px;font-weight:700;color:#3B6D11;">
+        <span class="lang-uz">Kurs narxi:</span>
+        <span class="lang-cyr" style="display:none;">Курс нархи:</span>
+        <span class="lang-ru" style="display:none;">Стоимость курса:</span>
+        <span> 4 300 000 so'm</span>
+      </p>
     {% elif attempt.score > 6 %}
-      <p style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz. Yaxshi natija!</p>
-      <p style="font-size:18px;font-weight:700;color:#B07A10;">Kurs narxi: <span>4 370 000 so'm</span></p>
+      <p class="lang-uz" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz. Yaxshi natija!</p>
+      <p class="lang-cyr" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;display:none;">Сиз <strong>{{ attempt.score }} та</strong> саволга тўғри жавоб бердингиз. Яхши натижа!</p>
+      <p class="lang-ru" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;display:none;">Вы правильно ответили на <strong>{{ attempt.score }}</strong> вопросов. Хороший результат!</p>
+      <p style="font-size:18px;font-weight:700;color:#B07A10;">
+        <span class="lang-uz">Kurs narxi:</span>
+        <span class="lang-cyr" style="display:none;">Курс нархи:</span>
+        <span class="lang-ru" style="display:none;">Стоимость курса:</span>
+        <span> 4 370 000 so'm</span>
+      </p>
     {% else %}
-      <p style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz.</p>
-      <p style="font-size:18px;font-weight:700;color:#993C1D;">Kurs narxi: <span>4 500 000 so'm</span></p>
+      <p class="lang-uz" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;">Siz <strong>{{ attempt.score }} ta</strong> savolga to'g'ri javob berdingiz.</p>
+      <p class="lang-cyr" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;display:none;">Сиз <strong>{{ attempt.score }} та</strong> саволга тўғри жавоб бердингиз.</p>
+      <p class="lang-ru" style="font-size:14px;color:#5F5E5A;margin-bottom:6px;display:none;">Вы правильно ответили на <strong>{{ attempt.score }}</strong> вопросов.</p>
+      <p style="font-size:18px;font-weight:700;color:#993C1D;">
+        <span class="lang-uz">Kurs narxi:</span>
+        <span class="lang-cyr" style="display:none;">Курс нархи:</span>
+        <span class="lang-ru" style="display:none;">Стоимость курса:</span>
+        <span> 4 500 000 so'm</span>
+      </p>
     {% endif %}
   </div>
 
   <div style="margin-top:1.5rem;">
-    <h2 style="font-size:16px;font-weight:600;margin-bottom:1rem;">Javoblar sharhi</h2>
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:1rem;" data-i18n="result.review">Javoblar sharhi</h2>
     {% for ans in answers %}
     <div class="answer-item {% if ans.is_correct %}correct{% else %}wrong{% endif %}">
-      <div class="q-label">{{ forloop.counter }}. {{ ans.question.text|truncatechars:80 }}</div>
+      <div class="q-label">{{ forloop.counter }}.
+        <span data-uz="{{ ans.question.text|truncatechars:80 }}"
+              data-cyr="{{ ans.question.text_uz_cyr|truncatechars:80 }}"
+              data-ru="{{ ans.question.text_ru|truncatechars:80 }}">{{ ans.question.text|truncatechars:80 }}</span>
+      </div>
       {% if ans.chosen %}
-        <div class="chosen">Siz: {{ ans.chosen.text }}</div>
+        <div class="chosen">
+          <span data-i18n="result.your">Siz:</span>
+          <span data-uz="{{ ans.chosen.text }}" data-cyr="{{ ans.chosen.text_uz_cyr }}" data-ru="{{ ans.chosen.text_ru }}">{{ ans.chosen.text }}</span>
+        </div>
       {% else %}
-        <div class="chosen" style="color:#993C1D;">Javob berilmagan</div>
+        <div class="chosen" style="color:#993C1D;" data-i18n="result.no_answer">Javob berilmagan</div>
       {% endif %}
       {% if not ans.is_correct %}
         {% for c in ans.question.choices.all %}
-          {% if c.is_correct %}<div class="correct-ans">✓ To'g'ri: {{ c.text }}</div>{% endif %}
+          {% if c.is_correct %}
+          <div class="correct-ans">
+            <span data-i18n="result.correct_pfx">✓ To'g'ri:</span>
+            <span data-uz="{{ c.text }}" data-cyr="{{ c.text_uz_cyr }}" data-ru="{{ c.text_ru }}">{{ c.text }}</span>
+          </div>
+          {% endif %}
         {% endfor %}
       {% endif %}
     </div>

@@ -6,18 +6,33 @@
   <title>{% block title %}Test Platforma{% endblock %}</title>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    .lang-switcher { display:flex; gap:2px; background:#f0ece6; border-radius:8px; padding:3px; }
+    .lang-btn {
+      background:none; border:none; cursor:pointer;
+      padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600;
+      color:#5F5E5A; transition:all .15s;
+    }
+    .lang-btn.active { background:#fff; color:#1a1a1a; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+    .lang-btn:hover:not(.active) { color:#1a1a1a; }
+  </style>
 </head>
 <body>
 
 <nav>
   <div class="container-wide inner">
     <a href="{% url 'quiz:home' %}" class="brand">🧠 TestPlatform</a>
-    <div class="nav-links">
+    <div class="nav-links" style="display:flex;align-items:center;gap:10px;">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="uz" onclick="setLang('uz')">UZ</button>
+        <button class="lang-btn" data-lang="cyr" onclick="setLang('cyr')">ЎЗ</button>
+        {# <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">RU</button> #}
+      </div>
       {% if user.is_authenticated %}
-        <a href="{% url 'quiz:dashboard' %}" class="nav-link">Panel</a>
-        <a href="{% url 'quiz:teacher_logout' %}" class="nav-link">Chiqish</a>
+        <a href="{% url 'quiz:dashboard' %}" class="nav-link" data-i18n="nav.panel">Panel</a>
+        <a href="{% url 'quiz:teacher_logout' %}" class="nav-link" data-i18n="nav.logout">Chiqish</a>
       {% else %}
-        <a href="{% url 'quiz:teacher_login' %}" class="nav-btn">O'qituvchi</a>
+        <a href="{% url 'quiz:teacher_login' %}" class="nav-btn" data-i18n="nav.teacher">O'qituvchi</a>
       {% endif %}
     </div>
   </div>
@@ -27,5 +42,103 @@
   {% block content %}{% endblock %}
 </main>
 
+<script>
+const I18N = {
+  uz: {
+    'nav.panel': 'Panel',
+    'nav.logout': 'Chiqish',
+    'nav.teacher': "O'qituvchi",
+    'home.title': 'Mavjud testlar',
+    'home.subtitle': 'Testni tanlang va boshlang',
+    'home.questions': 'savol',
+    'home.minutes': 'daqiqa',
+    'home.start': 'Testni boshlash →',
+    'home.empty': "Hozircha faol test yo'q.",
+    'enter.subtitle': "Davom etishdan oldin ma'lumotlaringizni kiriting",
+    'enter.name_label': "To'liq ismingiz",
+    'enter.name_ph': 'Masalan: Alibek Karimov',
+    'enter.phone_label': 'Telefon raqamingiz',
+    'enter.questions': 'savol',
+    'enter.minutes': 'daqiqa vaqt',
+    'enter.start': 'Testni boshlash →',
+    'take.prev': '← Oldingi',
+    'take.next': 'Keyingisi →',
+    'take.finish': 'Tugatish ✓',
+    'result.correct_lbl': "To'g'ri",
+    'result.total_lbl': 'Jami savol',
+    'result.time_lbl': 'Vaqt',
+    'result.home': 'Bosh sahifaga →',
+    'result.review': 'Javoblar sharhi',
+    'result.your': 'Siz:',
+    'result.no_answer': 'Javob berilmagan',
+    'result.correct_pfx': "✓ To'g'ri:",
+  },
+  cyr: {
+    'nav.panel': 'Панель',
+    'nav.logout': 'Чиқиш',
+    'nav.teacher': 'Ўқитувчи',
+    'home.title': 'Мавжуд тестлар',
+    'home.subtitle': 'Тестни танланг ва бошланг',
+    'home.questions': 'савол',
+    'home.minutes': 'дақиқа',
+    'home.start': 'Тестни бошлаш →',
+    'home.empty': 'Ҳозирча фаол тест йўқ.',
+    'enter.subtitle': 'Давом этишдан олдин маълумотларингизни киритинг',
+    'enter.name_label': 'Тўлиқ исмингиз',
+    'enter.name_ph': 'Масалан: Алибек Каримов',
+    'enter.phone_label': 'Телефон рақамингиз',
+    'enter.questions': 'савол',
+    'enter.minutes': 'дақиқа вақт',
+    'enter.start': 'Тестни бошлаш →',
+    'take.prev': '← Олдинги',
+    'take.next': 'Кейингиси →',
+    'take.finish': 'Тугатиш ✓',
+    'result.correct_lbl': 'Тўғри',
+    'result.total_lbl': 'Жами савол',
+    'result.time_lbl': 'Вақт',
+    'result.home': 'Бош саҳифага →',
+    'result.review': 'Жавоблар шарҳи',
+    'result.your': 'Сиз:',
+    'result.no_answer': 'Жавоб берилмаган',
+    'result.correct_pfx': '✓ Тўғри:',
+  }
+};
+
+function applyLang(lang) {
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = I18N[lang]?.[el.dataset.i18n];
+    if (val !== undefined) el.textContent = val;
+  });
+
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const val = I18N[lang]?.[el.dataset.i18nPh];
+    if (val !== undefined) el.placeholder = val;
+  });
+
+  document.querySelectorAll('[data-uz]').forEach(el => {
+    const val = (lang === 'cyr' ? el.dataset.cyr : el.dataset.uz) || el.dataset.uz;
+    if (val) el.textContent = val;
+  });
+
+  ['uz', 'cyr'].forEach(l => {
+    document.querySelectorAll('.lang-' + l).forEach(el => {
+      el.style.display = l === lang ? '' : 'none';
+    });
+  });
+}
+
+function setLang(lang) {
+  localStorage.setItem('tp_lang', lang);
+  applyLang(lang);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyLang(localStorage.getItem('tp_lang') || 'uz');
+});
+</script>
 </body>
 </html>
